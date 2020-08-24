@@ -130,12 +130,17 @@ abstract class AppDatabase : RoomDatabase() {
                     // create filter profiles table
                     db.execSQL("CREATE TABLE IF NOT EXISTS `FilterProfile` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))")
 
+                    db.execSQL("CREATE TABLE `BooleanFilterValueNew` (`key` TEXT NOT NULL, `value` INTEGER NOT NULL, `profile` INTEGER NOT NULL, PRIMARY KEY(`key`, `profile`), FOREIGN KEY(`profile`) REFERENCES `FilterProfile`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                    db.execSQL("CREATE TABLE `MultipleChoiceFilterValueNew` (`key` TEXT NOT NULL, `values` TEXT NOT NULL, `all` INTEGER NOT NULL, `profile` INTEGER NOT NULL, PRIMARY KEY(`key`, `profile`), FOREIGN KEY(`profile`) REFERENCES `FilterProfile`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                    db.execSQL("CREATE TABLE `SliderFilterValueNew` (`key` TEXT NOT NULL, `value` INTEGER NOT NULL, `profile` INTEGER NOT NULL, PRIMARY KEY(`key`, `profile`), FOREIGN KEY(`profile`) REFERENCES `FilterProfile`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
                     for (table in listOf(
                         "BooleanFilterValue",
                         "MultipleChoiceFilterValue",
                         "SliderFilterValue"
                     )) {
-                        db.execSQL("ALTER TABLE `$table` ADD COLUMN `profile` INTEGER REFERENCES `FilterProfile`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE")
+                        db.execSQL("INSERT INTO `${table}New` SELECT *, 0 FROM `$table`");
+                        db.execSQL("DROP TABLE `$table`")
+                        db.execSQL("ALTER TABLE `${table}New` RENAME TO `$table`")
                     }
 
                     db.setTransactionSuccessful()
