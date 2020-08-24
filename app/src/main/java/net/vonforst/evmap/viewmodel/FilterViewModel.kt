@@ -161,7 +161,12 @@ class FilterViewModel(application: Application, geApiKey: String) :
     }
 
     suspend fun saveAsProfile(name: String) {
-
+        val profile = db.filterProfileDao().getOrCreateProfileByName(name)
+        filtersWithValue.value?.forEach {
+            val filterValue = it.value
+            filterValue.profile = profile.id
+            db.filterValueDao().insert(filterValue)
+        }
     }
 }
 

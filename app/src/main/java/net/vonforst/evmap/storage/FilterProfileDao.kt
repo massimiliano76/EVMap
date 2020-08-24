@@ -7,8 +7,10 @@ import net.vonforst.evmap.viewmodel.FilterValue
 import net.vonforst.evmap.viewmodel.MultipleChoiceFilterValue
 import net.vonforst.evmap.viewmodel.SliderFilterValue
 
-@Entity
-data class FilterProfile(@PrimaryKey val id: Long, val name: String)
+@Entity(indices = [Index("name", unique = true)])
+data class FilterProfile(@PrimaryKey(autoGenerate = true) var id: Long, val name: String) {
+    constructor(name: String) : this(0, name)
+}
 
 data class FilterProfileDetail(
     @Embedded val filterProfile: FilterProfile,
@@ -43,6 +45,17 @@ interface FilterProfileDao {
     @Query("SELECT * FROM filterProfile")
     fun getProfiles(): LiveData<List<FilterProfile>>
 
-    @Query("SELECT * FROM filterProfile")
-    fun getProfileDetails(): LiveData<List<FilterProfileDetail>>
+    @Query("SELECT * FROM filterProfile WHERE name = :name")
+    suspend fun getProfileByName(name: String): FilterProfile?
+
+    @Transaction
+    suspend fun getOrCreateProfileByName(name: String): FilterProfile {
+        val profile = getProfileByName(name)
+        if (profile == null) {
+            insert(FilterProfile(name))
+            return getProfileByName(name)!!
+        } else {
+            return profile
+        }
+    }
 }
