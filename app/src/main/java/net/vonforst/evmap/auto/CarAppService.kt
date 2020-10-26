@@ -24,6 +24,8 @@ class HelloWorldScreen(ctx: CarContext) : Screen(ctx) {
                     .build()
             )
             .build()
-        return PaneTemplate.builder(pane).build()
+        return PaneTemplate.builder(pane)
+            .setTitle("EVMap")
+            .build()
     }
 }
