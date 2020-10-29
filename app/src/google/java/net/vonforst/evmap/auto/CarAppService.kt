@@ -6,10 +6,12 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.view.Surface
 import android.view.View
-import com.google.android.libraries.car.app.*
+import com.google.android.libraries.car.app.CarContext
+import com.google.android.libraries.car.app.Screen
+import com.google.android.libraries.car.app.SurfaceContainer
+import com.google.android.libraries.car.app.SurfaceListener
 import com.google.android.libraries.car.app.model.*
 import com.google.android.libraries.car.app.model.Distance.UNIT_KILOMETERS
-import com.google.android.libraries.car.app.navigation.model.PlaceListNavigationTemplate
 import com.google.android.libraries.maps.GoogleMap
 import com.google.android.libraries.maps.GoogleMapOptions
 import com.google.android.libraries.maps.MapView
@@ -17,8 +19,6 @@ import com.google.android.libraries.maps.MapView
 
 class CarAppService : com.google.android.libraries.car.app.CarAppService() {
     override fun onCreateScreen(intent: Intent): Screen {
-        carContext.getCarService(AppManager::class.java)
-            .setSurfaceListener(MapSurfaceListener(carContext))
         return MapScreen(carContext)
     }
 }
@@ -35,13 +35,14 @@ class MapScreen(ctx: CarContext) : Screen(ctx) {
             .setTitle("Example Charger 1")
             .addText(distance)
             .build()
-        return PlaceListNavigationTemplate.builder()
+        return PlaceListMapTemplate.builder()
             .setTitle("EVMap")
             .setItemList(
                 ItemList.builder()
                     .addItem(item)
                     .build()
             )
+            .setAnchor(Place.builder((LatLng.create(54.0, 9.0))).build())
             .build()
     }
 }
