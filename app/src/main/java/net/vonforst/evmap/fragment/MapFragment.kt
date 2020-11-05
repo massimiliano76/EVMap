@@ -18,6 +18,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuCompat
 import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -850,9 +851,24 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapsActivity.FragmentCallbac
                 filterBadge.text = it.toString()
             })
         }
+        vm.filterProfiles.observe(viewLifecycleOwner, Observer {})
         filterView?.setOnClickListener {
             val popup = PopupMenu(requireContext(), it, Gravity.END)
             popup.menuInflater.inflate(R.menu.popup_filter, popup.menu)
+
+            val profiles = vm.filterProfiles.value
+
+            if (profiles != null) {
+                val group = 10
+                val idMap = hashMapOf<Int, Long>()
+                profiles.forEachIndexed { i, profile ->
+                    idMap[i] = profile.id
+                    popup.menu.add(group, i, 0, profile.name)
+                }
+                MenuCompat.setGroupDividerEnabled(popup.menu, true)
+                popup.menu.setGroupCheckable(group, true, true)
+            }
+
             popup.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_edit_filters -> {

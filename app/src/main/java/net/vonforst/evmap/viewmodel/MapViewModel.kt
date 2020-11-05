@@ -202,6 +202,10 @@ class MapViewModel(application: Application, geApiKey: String) : AndroidViewMode
         }
     }
 
+    val filterProfiles: LiveData<List<FilterProfile>> by lazy {
+        db.filterProfileDao().getProfiles()
+    }
+
     fun setMapType(type: AnyMap.Type) {
         mapType.value = type
     }
