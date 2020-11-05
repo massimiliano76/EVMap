@@ -2,36 +2,10 @@ package net.vonforst.evmap.storage
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import net.vonforst.evmap.viewmodel.BooleanFilterValue
-import net.vonforst.evmap.viewmodel.FilterValue
-import net.vonforst.evmap.viewmodel.MultipleChoiceFilterValue
-import net.vonforst.evmap.viewmodel.SliderFilterValue
 
 @Entity(indices = [Index("name", unique = true)])
 data class FilterProfile(@PrimaryKey(autoGenerate = true) var id: Long, val name: String) {
     constructor(name: String) : this(0, name)
-}
-
-data class FilterProfileDetail(
-    @Embedded val filterProfile: FilterProfile,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "profile"
-    )
-    val sliderValues: List<SliderFilterValue>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "profile"
-    )
-    val booleanValues: List<BooleanFilterValue>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "profile"
-    )
-    val multipleChoiceValues: List<MultipleChoiceFilterValue>
-) {
-    val values: List<FilterValue>
-        get() = sliderValues + booleanValues + multipleChoiceValues
 }
 
 @Dao
